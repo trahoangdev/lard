@@ -37,10 +37,12 @@ CREATE TABLE "payroll_runs" (
 CREATE TABLE "payroll_items" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "runId" INTEGER NOT NULL,
+    "sourceRowNumber" INTEGER NOT NULL,
     "employeeName" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "bankAccount" TEXT NOT NULL,
     "amount" DECIMAL NOT NULL,
+    "note" TEXT,
     "status" TEXT NOT NULL DEFAULT 'QUEUED',
     "message" TEXT,
     "processedAt" DATETIME,
