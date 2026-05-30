@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  EMPLOYEE
+  MANAGER
+  HR_ADMIN
+}
+
+enum LeaveType {
+  ANNUAL
+  SICK
+  UNPAID
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PayrollRunStatus {
+  DRAFT
+  CONFIRMED
+  DONE
+}
+
+enum PayrollItemStatus {
+  QUEUED
+  SENT
+  FAILED
+  SENT_SIMULATED
+}
+
+model Employee {
+  id   String @id
+  name String
+  role Role
+
+  leaveRequests LeaveRequest[]
+
+  @@map("employees")
+}
+
+model LeaveRequest {
+  id             Int         @id @default(autoincrement())
+  employeeId     String
+  startDate      DateTime
+  endDate        DateTime
+  type           LeaveType
+  reason         String
+  status         LeaveStatus @default(PENDING)
+  createdAt      DateTime    @default(now())
+  decidedAt      DateTime?
+  decidedBy      String?
+  decisionReason String?
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId, createdAt])
+  @@map("leave_requests")
+}
+
+model PayrollRun {
+  id                  Int             @id @default(autoincrement())
+  createdAt            DateTime        @default(now())
+  status               PayrollRunStatus @default(DRAFT)
+  totalAmount          Decimal         @default(0)
+  inputFilename        String
+  inputStoragePath     String
+  bankBatchStoragePath String?
+  resultXlsxStoragePath String?
+
+  items PayrollItem[]
+
+  @@map("payroll_runs")
+}
+
+model PayrollItem {
+  id           Int             @id @default(autoincrement())
+  runId        Int
+  sourceRowNumber Int
+  employeeName String
+  email        String
+  bankAccount  String
+  amount       Decimal
+  note         String?
+  status       PayrollItemStatus @default(QUEUED)
+  message      String?
+  processedAt  DateTime?
+
+  run PayrollRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId])
+  @@map("payroll_items")
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  action      String
+  payloadJson String
+  createdAt   DateTime @default(now())
+
+  @@map("audit_logs")
+}
