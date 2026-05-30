@@ -911,7 +911,7 @@ export default function Home() {
   const chatSubtitle =
     actorEmployeeId === "applicant"
       ? "Jobs · Apply · Upload CV · Track status"
-      : `${roleLabel(currentRole, actorEmployeeId)} · Command → Confirm → Artifact`;
+      : roleLabel(currentRole, actorEmployeeId);
 
   return (
     <div className="relative flex h-[calc(100dvh-73px)] min-h-0 flex-1 overflow-hidden bg-cloud-mist text-text-black">
