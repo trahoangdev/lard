@@ -18,10 +18,10 @@ type LeaveRow = {
 };
 
 function badgeTone(status: string) {
-  if (status === "APPROVED") return "bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-500/30";
-  if (status === "PENDING") return "bg-amber-500/15 text-amber-200 ring-1 ring-amber-500/30";
-  if (status === "REJECTED") return "bg-rose-500/15 text-rose-200 ring-1 ring-rose-500/30";
-  return "bg-white/10 text-white/70 ring-1 ring-white/15";
+  if (status === "APPROVED") return "bg-pale-gray text-glacier-blue";
+  if (status === "PENDING") return "bg-pale-gray text-sunset-gold";
+  if (status === "REJECTED") return "bg-pale-gray text-ocean-glimmer";
+  return "bg-pale-gray text-slate-blue";
 }
 
 export function AdminClient({ initial }: { initial: LeaveRow[] }) {
@@ -70,21 +70,21 @@ export function AdminClient({ initial }: { initial: LeaveRow[] }) {
   }
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 shadow-[0_30px_80px_rgba(0,0,0,0.55)]">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-6 py-5">
+    <div className="card-floating">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-platinum-tint px-6 py-5">
         <div>
-          <div className="text-xs uppercase tracking-[0.22em] text-white/50">Admin</div>
-          <div className="mt-1 text-lg font-semibold tracking-tight">Leave Requests</div>
+          <div className="text-xs font-medium uppercase tracking-[0.15em] text-steel-gray">Admin</div>
+          <div className="mt-1 text-lg font-semibold tracking-tight text-midnight-indigo">Leave Requests</div>
         </div>
-        <div className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-sm text-white/75">
-          Pending: <span className="font-semibold text-white">{pendingCount}</span>
+        <div className="badge-info !rounded-full !px-4 !py-2">
+          Pending: <span className="font-semibold">{pendingCount}</span>
         </div>
       </div>
 
       <div className="overflow-x-auto">
         <table className="min-w-full text-left text-sm">
-          <thead className="text-xs uppercase tracking-[0.22em] text-white/50">
-            <tr className="border-b border-white/10">
+          <thead className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">
+            <tr className="border-b border-platinum-tint">
               <th className="px-6 py-4">ID</th>
               <th className="px-6 py-4">Employee</th>
               <th className="px-6 py-4">Dates</th>
@@ -95,16 +95,16 @@ export function AdminClient({ initial }: { initial: LeaveRow[] }) {
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.id} className="border-b border-white/10 last:border-b-0">
-                <td className="px-6 py-4 font-mono text-xs text-white/70">#{r.id}</td>
+              <tr key={r.id} className="border-b border-platinum-tint last:border-b-0">
+                <td className="px-6 py-4 font-mono text-xs text-slate-blue">#{r.id}</td>
                 <td className="px-6 py-4">
-                  <div className="font-semibold text-white">{r.employeeName}</div>
-                  <div className="mt-1 text-xs text-white/60">{r.reason}</div>
+                  <div className="font-semibold text-midnight-indigo">{r.employeeName}</div>
+                  <div className="mt-1 text-xs text-slate-blue">{r.reason}</div>
                 </td>
-                <td className="px-6 py-4 text-white/80">
+                <td className="px-6 py-4 text-midnight-indigo">
                   {r.startDate} → {r.endDate}
                 </td>
-                <td className="px-6 py-4 text-white/80">{r.type}</td>
+                <td className="px-6 py-4 text-midnight-indigo">{r.type}</td>
                 <td className="px-6 py-4">
                   <span className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeTone(r.status)}`}>
                     {r.status}
@@ -117,7 +117,7 @@ export function AdminClient({ initial }: { initial: LeaveRow[] }) {
                         type="button"
                         disabled={busyId === r.id}
                         onClick={() => void decide(r.id, "APPROVE")}
-                        className="rounded-full border border-emerald-500/30 bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-100 transition hover:bg-emerald-500/20 disabled:opacity-60"
+                        className="btn-primary disabled:opacity-60"
                       >
                         Approve
                       </button>
@@ -125,13 +125,13 @@ export function AdminClient({ initial }: { initial: LeaveRow[] }) {
                         type="button"
                         disabled={busyId === r.id}
                         onClick={() => void decide(r.id, "REJECT")}
-                        className="rounded-full border border-rose-500/30 bg-rose-500/15 px-4 py-2 text-sm font-semibold text-rose-100 transition hover:bg-rose-500/20 disabled:opacity-60"
+                        className="rounded-lg border border-ocean-glimmer/30 bg-pale-gray px-4 py-2 text-sm font-semibold text-ocean-glimmer transition hover:bg-pale-gray/80 disabled:opacity-60"
                       >
                         Reject
                       </button>
                     </div>
                   ) : (
-                    <div className="text-xs text-white/60">
+                    <div className="text-xs text-slate-blue">
                       {r.decidedBy ? `By ${r.decidedBy}` : ""}
                       {r.decisionReason ? ` — ${r.decisionReason}` : ""}
                     </div>
@@ -141,7 +141,7 @@ export function AdminClient({ initial }: { initial: LeaveRow[] }) {
             ))}
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-10 text-center text-white/60">
+                <td colSpan={6} className="px-6 py-10 text-center text-slate-blue">
                   No leave requests yet. Create one from the Chat page.
                 </td>
               </tr>
@@ -152,4 +152,3 @@ export function AdminClient({ initial }: { initial: LeaveRow[] }) {
     </div>
   );
 }
-

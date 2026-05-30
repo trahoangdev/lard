@@ -321,12 +321,12 @@ function defaultSession(role: string, id?: string): ActorSession {
 }
 function badgeTone(status: string) {
   if (status === "APPROVED" || status === "DONE" || status === "ACCEPTED" || status === "BOSS_APPROVED" || status === "INTERVIEW_INVITED")
-    return "bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-500/30";
+    return "bg-pale-gray text-glacier-blue";
   if (status === "PENDING" || status === "DRAFT" || status === "SUBMITTED" || status === "UNDER_REVIEW")
-    return "bg-amber-500/15 text-amber-200 ring-1 ring-amber-500/30";
-  if (status === "PENDING_BOSS" || status === "HR_SHORTLISTED") return "bg-orange-500/15 text-orange-200 ring-1 ring-orange-500/30";
-  if (status === "REJECTED" || status === "FAILED") return "bg-rose-500/15 text-rose-200 ring-1 ring-rose-500/30";
-  return "bg-white/10 text-white/70 ring-1 ring-white/15";
+    return "bg-pale-gray text-sunset-gold";
+  if (status === "PENDING_BOSS" || status === "HR_SHORTLISTED") return "bg-pale-gray text-royal-amethyst";
+  if (status === "REJECTED" || status === "FAILED") return "bg-pale-gray text-ocean-glimmer";
+  return "bg-pale-gray text-slate-blue";
 }
 
 export default function Home() {
@@ -796,18 +796,18 @@ export default function Home() {
       : `${roleLabel(currentRole, actorEmployeeId)} · Command → Confirm → Artifact`;
 
   return (
-    <div className="flex h-[calc(100dvh-73px)] min-h-0 flex-1 overflow-hidden bg-[#070707] text-white">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(20,184,166,0.18),transparent_42%),radial-gradient(circle_at_80%_55%,rgba(251,146,60,0.14),transparent_48%),radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.1),transparent_40%)]" />
+    <div className="relative flex h-[calc(100dvh-73px)] min-h-0 flex-1 overflow-hidden bg-cloud-mist text-text-black">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_15%_10%,rgba(229,92,255,0.08),transparent_40%),radial-gradient(circle_at_85%_60%,rgba(0,153,255,0.07),transparent_45%),radial-gradient(circle_at_50%_100%,rgba(0,107,255,0.05),transparent_40%)]" />
 
       <main className="relative mx-auto flex h-full min-h-0 w-full max-w-6xl gap-6 px-6 py-4">
         <aside className="hidden h-full min-h-0 w-80 shrink-0 overflow-y-auto lg:block">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.55)]">
-            <div className="text-xs uppercase tracking-[0.22em] text-white/50">Demo Identity</div>
-            <div className="mt-2 text-lg font-semibold tracking-tight">Who are you?</div>
+          <div className="card-floating p-6">
+            <div className="text-xs font-medium uppercase tracking-[0.15em] text-steel-gray">Demo Identity</div>
+            <div className="mt-2 text-lg font-semibold tracking-tight text-midnight-indigo">Who are you?</div>
             <select
               value={actorEmployeeId}
               onChange={(e) => setActorEmployeeId(e.target.value)}
-              className="mt-4 w-full rounded-2xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white outline-none ring-0 focus:border-white/30"
+              className="mt-4 w-full rounded-lg border border-platinum-tint bg-snow-white px-4 py-3 text-sm text-text-black outline-none focus:border-action-blue focus:ring-2 focus:ring-action-blue/20"
             >
               {employees.length === 0 ? (
                 <>
@@ -823,9 +823,9 @@ export default function Home() {
                 ))
               )}
             </select>
-            <div className="mt-3 text-xs text-white/50">Each person has a separate chat history.</div>
+            <div className="mt-3 text-xs text-slate-blue">Each person has a separate chat history.</div>
 
-            <div className="mt-8 text-xs uppercase tracking-[0.22em] text-white/50">
+            <div className="mt-8 text-xs font-medium uppercase tracking-[0.15em] text-steel-gray">
               {actorEmployeeId === "applicant" ? "Quick actions" : "Quick Commands"}
             </div>
             <div className="mt-3 flex flex-col gap-2">
@@ -842,7 +842,7 @@ export default function Home() {
                   key={key}
                   type="button"
                   onClick={() => runQuickCommand(key)}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm text-white/85 transition hover:border-white/20 hover:bg-white/10"
+                  className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3 text-left text-sm text-midnight-indigo transition hover:border-action-blue/30 hover:bg-pale-gray"
                 >
                   {label}
                 </button>
@@ -851,24 +851,24 @@ export default function Home() {
           </div>
         </aside>
 
-        <section className="flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-[0_30px_80px_rgba(0,0,0,0.55)]">
-          <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-6 py-4">
+        <section className="card-floating flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          <div className="flex shrink-0 items-center justify-between border-b border-platinum-tint px-6 py-4">
             <div>
-              <div className="text-xs uppercase tracking-[0.22em] text-white/50">Chat</div>
-              <div className="mt-1 text-lg font-semibold tracking-tight">{chatSubtitle}</div>
+              <div className="text-xs font-medium uppercase tracking-[0.15em] text-steel-gray">Chat</div>
+              <div className="mt-1 text-lg font-semibold tracking-tight text-midnight-indigo">{chatSubtitle}</div>
               {cvApplyJob && actorEmployeeId === "applicant" ? (
-                <div className="mt-1 text-xs text-teal-300/80">
+                <div className="mt-1 text-xs text-action-blue">
                   Ready to upload CV for {cvApplyJob.jobTitle}
                 </div>
               ) : null}
             </div>
             <div className="hidden flex-wrap items-center justify-end gap-2 md:flex">
-              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-2 text-xs text-white/70">
-                <div className={`h-2 w-2 rounded-full ${supabaseConnected ? "bg-sky-400" : "bg-zinc-500"}`} />
+              <div className="badge-info flex items-center gap-2 !rounded-full !px-3 !py-1.5">
+                <div className={`h-2 w-2 rounded-full ${supabaseConnected ? "bg-skybound-blue" : "bg-steel-gray"}`} />
                 {supabaseConnected ? (supabaseStorage ? "Supabase · Storage" : "Supabase") : "Supabase off"}
               </div>
-              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-2 text-xs text-white/70">
-                <div className={`h-2 w-2 rounded-full ${aiEnabled ? "bg-violet-400" : "bg-emerald-400"}`} />
+              <div className="badge-info flex items-center gap-2 !rounded-full !px-3 !py-1.5">
+                <div className={`h-2 w-2 rounded-full ${aiEnabled ? "bg-royal-amethyst" : "bg-action-blue"}`} />
                 {aiEnabled ? `AI · ${aiModel ?? "enabled"}` : "Rules mode"}
               </div>
             </div>
@@ -879,13 +879,13 @@ export default function Home() {
               {items.map((it) =>
                 it.from === "user" ? (
                   <div key={it.id} className="flex justify-end">
-                    <div className="max-w-[82%] rounded-2xl bg-white px-4 py-3 text-sm text-black shadow">
+                    <div className="max-w-[82%] rounded-lg bg-action-blue px-4 py-3 text-sm text-snow-white shadow-interactive">
                       {it.text}
                     </div>
                   </div>
                 ) : it.payload.kind === "text" ? (
                   <div key={it.id} className="flex justify-start">
-                    <div className="max-w-[82%] whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/35 px-4 py-3 text-sm text-white/90">
+                    <div className="max-w-[82%] whitespace-pre-wrap rounded-lg border border-platinum-tint bg-pale-gray px-4 py-3 text-sm text-text-black">
                       {it.payload.text}
                     </div>
                   </div>
@@ -899,10 +899,10 @@ export default function Home() {
                           disabled={busy}
                           onClick={() => void handleAction(a)}
                           className={[
-                            "rounded-full px-4 py-2 text-sm font-medium transition disabled:opacity-60",
+                            "rounded-lg px-4 py-2 text-sm font-medium transition disabled:opacity-60",
                             a.tone === "danger"
-                              ? "border border-rose-500/40 bg-rose-500/15 text-rose-100 hover:bg-rose-500/20"
-                              : "border border-white/15 bg-white/10 text-white hover:bg-white/15",
+                              ? "border border-ocean-glimmer/30 bg-pale-gray text-ocean-glimmer hover:bg-pale-gray/80"
+                              : "btn-primary",
                           ].join(" ")}
                         >
                           {a.label}
@@ -931,7 +931,7 @@ export default function Home() {
               )}
               {busy ? (
                 <div className="flex justify-start">
-                  <div className="rounded-2xl border border-white/10 bg-black/35 px-4 py-2 text-xs text-white/50">
+                  <div className="rounded-lg border border-platinum-tint bg-pale-gray px-4 py-2 text-xs text-slate-blue">
                     Working…
                   </div>
                 </div>
@@ -939,7 +939,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="shrink-0 border-t border-white/10 bg-black/40 px-6 py-4">
+          <div className="shrink-0 border-t border-platinum-tint bg-cloud-mist px-6 py-4">
             <form
               className="flex items-end gap-3"
               onSubmit={(e) => {
@@ -953,7 +953,7 @@ export default function Home() {
               }}
             >
               <div className="flex-1">
-                <div className="text-xs uppercase tracking-[0.22em] text-white/50">Message</div>
+                <div className="text-xs font-medium uppercase tracking-[0.15em] text-steel-gray">Message</div>
                 <textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
@@ -965,13 +965,13 @@ export default function Home() {
                         ? "Ask about leave, payroll, or recruitment…"
                         : "Type a command…"
                   }
-                  className="mt-2 w-full resize-none rounded-2xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white outline-none focus:border-white/30"
+                  className="mt-2 w-full resize-none rounded-lg border border-platinum-tint bg-snow-white px-4 py-3 text-sm text-text-black outline-none focus:border-action-blue focus:ring-2 focus:ring-action-blue/20"
                 />
               </div>
               <button
                 type="submit"
                 disabled={busy}
-                className="h-12 shrink-0 rounded-2xl bg-white px-5 text-sm font-semibold text-black transition hover:bg-zinc-200 disabled:opacity-60"
+                className="btn-primary h-12 shrink-0 px-5 disabled:opacity-60"
               >
                 {busy ? "…" : "Send"}
               </button>
@@ -982,7 +982,7 @@ export default function Home() {
                 type="button"
                 disabled={busy}
                 onClick={() => cvFileRef.current?.click()}
-                className="mt-3 w-full rounded-2xl border border-teal-400/30 bg-teal-400/10 px-4 py-2.5 text-sm font-medium text-teal-100 transition hover:bg-teal-400/20 disabled:opacity-60"
+                className="mt-3 w-full rounded-lg border border-action-blue/30 bg-pale-gray px-4 py-2.5 text-sm font-medium text-action-blue transition hover:bg-pale-gray/80 disabled:opacity-60"
               >
                 Upload CV for {cvApplyJob.jobTitle}
               </button>
@@ -1133,42 +1133,42 @@ function Card({
 
   if (card?.type === "recruitment_boss_done") {
     return (
-      <div className="max-w-[82%] rounded-3xl border border-emerald-500/25 bg-emerald-950/20 p-5">
-        <div className="text-sm font-semibold">Recruitment approved</div>
-        <div className="mt-2 text-white/75">{card.approved} candidate(s) cleared for HR interview decisions.</div>
+      <div className="card-floating max-w-[82%] p-5">
+        <div className="text-sm font-semibold text-midnight-indigo">Recruitment approved</div>
+        <div className="mt-2 text-slate-blue">{card.approved} candidate(s) cleared for HR interview decisions.</div>
       </div>
     );
   }
 
   if (card?.type === "leave_request") {
     return (
-      <div className="max-w-[82%] rounded-3xl border border-white/10 bg-white/5 p-5">
+      <div className="card-floating max-w-[82%] p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="text-sm font-semibold tracking-tight">Leave Request #{card.id}</div>
+          <div className="text-sm font-semibold tracking-tight text-midnight-indigo">Leave Request #{card.id}</div>
           <div className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeTone(card.status)}`}>
             {card.status}
           </div>
         </div>
-        <div className="mt-4 grid grid-cols-1 gap-3 text-sm text-white/85 sm:grid-cols-2">
-          <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-            <div className="text-xs uppercase tracking-[0.22em] text-white/50">Type</div>
-            <div className="mt-1 font-medium">{String(card.typeName)}</div>
+        <div className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
+          <div className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3">
+            <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Type</div>
+            <div className="mt-1 font-medium text-midnight-indigo">{String(card.typeName)}</div>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-            <div className="text-xs uppercase tracking-[0.22em] text-white/50">Dates</div>
-            <div className="mt-1 font-medium">
+          <div className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3">
+            <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Dates</div>
+            <div className="mt-1 font-medium text-midnight-indigo">
               {card.startDate} → {card.endDate}
             </div>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 sm:col-span-2">
-            <div className="text-xs uppercase tracking-[0.22em] text-white/50">Reason</div>
-            <div className="mt-1 font-medium">{card.reason}</div>
+          <div className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3 sm:col-span-2">
+            <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Reason</div>
+            <div className="mt-1 font-medium text-midnight-indigo">{card.reason}</div>
           </div>
         </div>
         {card.decidedBy ? (
-          <div className="mt-4 rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white/85">
-            <div className="text-xs uppercase tracking-[0.22em] text-white/50">Decision</div>
-            <div className="mt-1 font-medium">
+          <div className="mt-4 rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3 text-sm">
+            <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Decision</div>
+            <div className="mt-1 font-medium text-midnight-indigo">
               By {card.decidedBy}
               {card.decisionReason ? ` — ${card.decisionReason}` : ""}
             </div>
@@ -1180,24 +1180,24 @@ function Card({
 
   if (card?.type === "leave_balance") {
     return (
-      <div className="max-w-[82%] rounded-3xl border border-white/10 bg-white/5 p-5">
-        <div className="text-sm font-semibold tracking-tight">
+      <div className="card-floating max-w-[82%] p-5">
+        <div className="text-sm font-semibold tracking-tight text-midnight-indigo">
           Leave Balance{card.role ? ` (${roleLabel(card.role)})` : ""}
         </div>
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           {(["annual", "sick"] as const).map((k) => (
-            <div key={k} className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-              <div className="text-xs uppercase tracking-[0.22em] text-white/50">{k}</div>
-              <div className="mt-2 text-sm text-white/85">
+            <div key={k} className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3">
+              <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">{k}</div>
+              <div className="mt-2 text-sm">
                 <div className="flex items-center justify-between">
-                  <span>Remaining</span>
-                  <span className="font-semibold">{card[k].remaining}</span>
+                  <span className="text-slate-blue">Remaining</span>
+                  <span className="font-semibold text-midnight-indigo">{card[k].remaining}</span>
                 </div>
-                <div className="mt-1 flex items-center justify-between text-white/60">
+                <div className="mt-1 flex items-center justify-between text-steel-gray">
                   <span>Used</span>
                   <span>{card[k].used}</span>
                 </div>
-                <div className="mt-1 flex items-center justify-between text-white/60">
+                <div className="mt-1 flex items-center justify-between text-steel-gray">
                   <span>Total</span>
                   <span>{card[k].total}</span>
                 </div>
@@ -1211,8 +1211,8 @@ function Card({
 
   if (card?.type === "leave_stats") {
     return (
-      <div className="max-w-[82%] rounded-3xl border border-white/10 bg-white/5 p-5">
-        <div className="text-sm font-semibold tracking-tight">Team Leave Statistics</div>
+      <div className="card-floating max-w-[82%] p-5">
+        <div className="text-sm font-semibold tracking-tight text-midnight-indigo">Team Leave Statistics</div>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
             ["Headcount", card.summary.headcount],
@@ -1220,15 +1220,15 @@ function Card({
             ["Approved", card.summary.approvedLeaves],
             ["Payroll waiting", card.summary.payrollPendingBoss],
           ].map(([label, val]) => (
-            <div key={String(label)} className="rounded-2xl border border-white/10 bg-black/30 px-3 py-2 text-sm">
-              <div className="text-xs text-white/50">{label}</div>
-              <div className="mt-1 text-lg font-semibold">{val}</div>
+            <div key={String(label)} className="rounded-lg border border-platinum-tint bg-cloud-mist px-3 py-2 text-sm">
+              <div className="text-xs text-steel-gray">{label}</div>
+              <div className="mt-1 text-lg font-semibold text-midnight-indigo">{val}</div>
             </div>
           ))}
         </div>
-        <div className="mt-4 max-h-64 overflow-y-auto rounded-2xl border border-white/10 bg-black/30">
+        <div className="mt-4 max-h-64 overflow-y-auto rounded-lg border border-platinum-tint bg-cloud-mist">
           <table className="w-full text-left text-xs">
-            <thead className="sticky top-0 bg-black/80 text-white/50">
+            <thead className="sticky top-0 bg-pale-gray text-steel-gray">
               <tr>
                 <th className="px-3 py-2">Name</th>
                 <th className="px-3 py-2">Annual</th>
@@ -1238,7 +1238,7 @@ function Card({
             </thead>
             <tbody>
               {card.employees.map((e) => (
-                <tr key={e.id} className="border-t border-white/5 text-white/85">
+                <tr key={e.id} className="border-t border-platinum-tint text-midnight-indigo">
                   <td className="px-3 py-2">{e.name}</td>
                   <td className="px-3 py-2">
                     {e.annualRemaining}/{e.annualTotal}
@@ -1258,24 +1258,24 @@ function Card({
 
   if (card?.type === "payroll_pending_list") {
     return (
-      <div className="max-w-[82%] rounded-3xl border border-white/10 bg-white/5 p-5">
-        <div className="text-sm font-semibold tracking-tight">Pending Payroll Approvals</div>
+      <div className="card-floating max-w-[82%] p-5">
+        <div className="text-sm font-semibold tracking-tight text-midnight-indigo">Pending Payroll Approvals</div>
         <div className="mt-3 flex flex-col gap-2">
           {card.runs.map((r) => (
-            <div key={r.runId} className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm">
+            <div key={r.runId} className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3 text-sm">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <div className="font-semibold">Run #{r.runId}</div>
-                  <div className="mt-1 text-white/60">{r.filename}</div>
+                  <div className="font-semibold text-midnight-indigo">Run #{r.runId}</div>
+                  <div className="mt-1 text-slate-blue">{r.filename}</div>
                 </div>
                 <div className="flex flex-col items-end gap-2">
-                  <span className="font-semibold">{money(r.totalAmount)}</span>
+                  <span className="font-semibold text-midnight-indigo">{money(r.totalAmount)}</span>
                   {onApprovePayrollRun ? (
                     <button
                       type="button"
                       disabled={busy}
                       onClick={() => onApprovePayrollRun(r.runId)}
-                      className="rounded-full border border-teal-400/40 bg-teal-400/15 px-4 py-1.5 text-xs font-medium text-teal-100 transition hover:bg-teal-400/25 disabled:opacity-50"
+                      className="btn-primary !px-4 !py-1.5 !text-xs disabled:opacity-50"
                     >
                       Review & approve →
                     </button>
@@ -1291,30 +1291,27 @@ function Card({
 
   if (card?.type === "payroll_submitted") {
     return (
-      <div className="max-w-[82%] rounded-3xl border border-white/10 bg-white/5 p-5">
+      <div className="card-floating max-w-[82%] p-5">
         <div className="flex items-center justify-between gap-3">
-          <div className="text-sm font-semibold tracking-tight">Payroll Run #{card.runId}</div>
+          <div className="text-sm font-semibold tracking-tight text-midnight-indigo">Payroll Run #{card.runId}</div>
           <div className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeTone(card.status)}`}>{card.status}</div>
         </div>
-        <div className="mt-3 text-sm text-white/75">Submitted to Boss — waiting for approval.</div>
-        <div className="mt-2 text-lg font-semibold">{money(card.totalAmount)}</div>
+        <div className="mt-3 text-sm text-slate-blue">Submitted to Boss — waiting for approval.</div>
+        <div className="mt-2 text-lg font-semibold text-midnight-indigo">{money(card.totalAmount)}</div>
       </div>
     );
   }
 
   if (card?.type === "payroll_start") {
     return (
-      <div className="max-w-[82%] rounded-3xl border border-white/10 bg-white/5 p-5">
-        <div className="text-sm font-semibold tracking-tight">Payroll Run</div>
-        <div className="mt-2 text-sm text-white/75">
-          Download <span className="font-semibold text-white">payroll.xlsx</span>
+      <div className="card-floating max-w-[82%] p-5">
+        <div className="text-sm font-semibold tracking-tight text-midnight-indigo">Payroll Run</div>
+        <div className="mt-2 text-sm text-slate-blue">
+          Download <span className="font-semibold text-midnight-indigo">payroll.xlsx</span>
           {card.employeeCount ? ` — includes all ${card.employeeCount} employees from the system.` : " with one row per employee."}
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
-          <a
-            href={card.sampleUrl}
-            className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15"
-          >
+          <a href={card.sampleUrl} className="btn-primary inline-block !no-underline">
             Download sample payroll.xlsx
           </a>
         </div>
@@ -1324,50 +1321,50 @@ function Card({
 
   if (card?.type === "payroll_preview") {
     return (
-      <div className="max-w-[82%] rounded-3xl border border-white/10 bg-white/5 p-5">
+      <div className="card-floating max-w-[82%] p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="text-sm font-semibold tracking-tight">Payroll Preview (Run #{card.runId})</div>
+          <div className="text-sm font-semibold tracking-tight text-midnight-indigo">Payroll Preview (Run #{card.runId})</div>
           <div className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeTone("DRAFT")}`}>DRAFT</div>
         </div>
-        <div className="mt-2 text-xs text-white/60">{card.inputFilename}</div>
+        <div className="mt-2 text-xs text-steel-gray">{card.inputFilename}</div>
 
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-            <div className="text-xs uppercase tracking-[0.22em] text-white/50">Rows</div>
-            <div className="mt-1 text-lg font-semibold">{card.rowCount}</div>
+          <div className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3">
+            <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Rows</div>
+            <div className="mt-1 text-lg font-semibold text-midnight-indigo">{card.rowCount}</div>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-            <div className="text-xs uppercase tracking-[0.22em] text-white/50">Valid</div>
-            <div className="mt-1 text-lg font-semibold text-emerald-200">{card.validCount}</div>
+          <div className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3">
+            <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Valid</div>
+            <div className="mt-1 text-lg font-semibold text-glacier-blue">{card.validCount}</div>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-            <div className="text-xs uppercase tracking-[0.22em] text-white/50">Invalid</div>
-            <div className="mt-1 text-lg font-semibold text-rose-200">{card.invalidCount}</div>
+          <div className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3">
+            <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Invalid</div>
+            <div className="mt-1 text-lg font-semibold text-ocean-glimmer">{card.invalidCount}</div>
           </div>
         </div>
 
-        <div className="mt-3 rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-          <div className="text-xs uppercase tracking-[0.22em] text-white/50">Valid Total</div>
-          <div className="mt-1 text-lg font-semibold">{money(card.totalAmount)}</div>
+        <div className="mt-3 rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3">
+          <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Valid Total</div>
+          <div className="mt-1 text-lg font-semibold text-midnight-indigo">{money(card.totalAmount)}</div>
         </div>
 
         {card.invalidRows?.length ? (
-          <div className="mt-4 rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-            <div className="text-xs uppercase tracking-[0.22em] text-white/50">Invalid rows (first {card.invalidRows.length})</div>
+          <div className="mt-4 rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3">
+            <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Invalid rows (first {card.invalidRows.length})</div>
             <div className="mt-3 flex flex-col gap-3">
               {card.invalidRows.map((r: PayrollPreviewInvalidRow) => (
-                <div key={r.rowNumber} className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm">
+                <div key={r.rowNumber} className="rounded-lg border border-platinum-tint bg-snow-white px-4 py-3 text-sm">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="font-semibold">
+                    <div className="font-semibold text-midnight-indigo">
                       Row {r.rowNumber} — {r.employeeName || "Unknown"}
                     </div>
                     <div className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeTone("FAILED")}`}>FAILED</div>
                   </div>
-                  <div className="mt-2 text-white/70">
+                  <div className="mt-2 text-slate-blue">
                     <div>{r.email}</div>
-                    <div className="mt-1 font-mono text-xs text-white/60">{r.bankAccountMasked}</div>
+                    <div className="mt-1 font-mono text-xs text-steel-gray">{r.bankAccountMasked}</div>
                   </div>
-                  <ul className="mt-2 list-disc pl-5 text-sm text-rose-100/90">
+                  <ul className="mt-2 list-disc pl-5 text-sm text-ocean-glimmer">
                     {r.issues.map((x: string) => (
                       <li key={x}>{x}</li>
                     ))}
@@ -1383,37 +1380,31 @@ function Card({
 
   if (card?.type === "payroll_run") {
     return (
-      <div className="max-w-[82%] rounded-3xl border border-white/10 bg-white/5 p-5">
+      <div className="card-floating max-w-[82%] p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="text-sm font-semibold tracking-tight">Payroll Run #{card.runId}</div>
+          <div className="text-sm font-semibold tracking-tight text-midnight-indigo">Payroll Run #{card.runId}</div>
           <div className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeTone("DONE")}`}>DONE</div>
         </div>
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-            <div className="text-xs uppercase tracking-[0.22em] text-white/50">Total</div>
-            <div className="mt-1 text-lg font-semibold">{money(card.totalAmount)}</div>
+          <div className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3">
+            <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Total</div>
+            <div className="mt-1 text-lg font-semibold text-midnight-indigo">{money(card.totalAmount)}</div>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-            <div className="text-xs uppercase tracking-[0.22em] text-white/50">Emails sent</div>
-            <div className="mt-1 text-lg font-semibold text-emerald-200">{card.emailStats?.sent ?? card.validCount}</div>
+          <div className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3">
+            <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Emails sent</div>
+            <div className="mt-1 text-lg font-semibold text-glacier-blue">{card.emailStats?.sent ?? card.validCount}</div>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-            <div className="text-xs uppercase tracking-[0.22em] text-white/50">Simulated</div>
-            <div className="mt-1 text-lg font-semibold text-white/70">{card.emailStats?.simulated ?? 0}</div>
+          <div className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3">
+            <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Simulated</div>
+            <div className="mt-1 text-lg font-semibold text-slate-blue">{card.emailStats?.simulated ?? 0}</div>
           </div>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          <a
-            href={card.artifacts.bankBatchUrl}
-            className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15"
-          >
+          <a href={card.artifacts.bankBatchUrl} className="btn-ghost rounded-lg border border-platinum-tint bg-cloud-mist !no-underline hover:bg-pale-gray">
             Download bank_batch.csv
           </a>
-          <a
-            href={card.artifacts.payrollResultUrl}
-            className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15"
-          >
+          <a href={card.artifacts.payrollResultUrl} className="btn-ghost rounded-lg border border-platinum-tint bg-cloud-mist !no-underline hover:bg-pale-gray">
             Download payroll_result.xlsx
           </a>
         </div>
@@ -1422,7 +1413,7 @@ function Card({
   }
 
   return (
-    <div className="max-w-[82%] rounded-2xl border border-white/10 bg-black/35 px-4 py-3 text-sm text-white/80">
+    <div className="max-w-[82%] rounded-lg border border-platinum-tint bg-pale-gray px-4 py-3 text-sm text-slate-blue">
       Unsupported card
     </div>
   );

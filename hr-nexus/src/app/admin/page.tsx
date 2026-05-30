@@ -26,28 +26,28 @@ export default async function AdminPage() {
   }));
 
   return (
-    <div className="flex flex-1 bg-black text-white">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.18),transparent_45%),radial-gradient(circle_at_80%_40%,rgba(124,58,237,0.20),transparent_45%),radial-gradient(circle_at_50%_100%,rgba(244,63,94,0.10),transparent_40%)]" />
+    <div className="relative flex flex-1 bg-cloud-mist text-text-black">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(229,92,255,0.06),transparent_45%),radial-gradient(circle_at_80%_40%,rgba(0,153,255,0.05),transparent_45%)]" />
       <main className="relative mx-auto w-full max-w-6xl px-6 py-8">
         <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-            <div className="text-xs uppercase tracking-[0.22em] text-white/50">Demo Step</div>
-            <div className="mt-2 text-sm font-semibold">Approve a request</div>
-            <div className="mt-2 text-sm text-white/70">
-              Pick a <span className="font-semibold text-white">PENDING</span> item and click Approve.
+          <div className="card-floating p-5">
+            <div className="text-xs font-medium uppercase tracking-[0.15em] text-steel-gray">Demo Step</div>
+            <div className="mt-2 text-sm font-semibold text-midnight-indigo">Approve a request</div>
+            <div className="mt-2 text-sm text-slate-blue">
+              Pick a <span className="font-semibold text-midnight-indigo">PENDING</span> item and click Approve.
             </div>
           </div>
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-            <div className="text-xs uppercase tracking-[0.22em] text-white/50">Demo Step</div>
-            <div className="mt-2 text-sm font-semibold">Switch back to Chat</div>
-            <div className="mt-2 text-sm text-white/70">
-              Ask <span className="font-semibold text-white">“Is my leave approved?”</span> to show status.
+          <div className="card-floating p-5">
+            <div className="text-xs font-medium uppercase tracking-[0.15em] text-steel-gray">Demo Step</div>
+            <div className="mt-2 text-sm font-semibold text-midnight-indigo">Switch back to Chat</div>
+            <div className="mt-2 text-sm text-slate-blue">
+              Ask <span className="font-semibold text-midnight-indigo">“Is my leave approved?”</span> to show status.
             </div>
           </div>
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-            <div className="text-xs uppercase tracking-[0.22em] text-white/50">Pro Tip</div>
-            <div className="mt-2 text-sm font-semibold">Use demo identities</div>
-            <div className="mt-2 text-sm text-white/70">
+          <div className="card-floating p-5">
+            <div className="text-xs font-medium uppercase tracking-[0.15em] text-steel-gray">Pro Tip</div>
+            <div className="mt-2 text-sm font-semibold text-midnight-indigo">Use demo identities</div>
+            <div className="mt-2 text-sm text-slate-blue">
               Chat page identity switcher lets you act as Employee/Manager/Admin instantly.
             </div>
           </div>
@@ -58,4 +58,3 @@ export default async function AdminPage() {
     </div>
   );
 }
-

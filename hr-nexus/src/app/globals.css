@@ -1,26 +1,144 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Colors */
+  --color-midnight-indigo: #0b3558;
+  --color-action-blue: #006bff;
+  --color-lavender-glow: #e55cff;
+  --color-royal-amethyst: #8247f5;
+  --color-sunset-gold: #ffa600;
+  --color-skybound-blue: #0099ff;
+  --color-ocean-glimmer: #bb32d5;
+  --color-glacier-blue: #004eba;
+  --color-snow-white: #ffffff;
+  --color-cloud-mist: #f8f9fb;
+  --color-pale-gray: #e7edf6;
+  --color-slate-blue: #476788;
+  --color-steel-gray: #a6bbd1;
+  --color-platinum-tint: #d4e0ed;
+  --color-outline-gray: #e6e6e6;
+  --color-text-black: #0a0a0a;
+
+  /* Typography */
+  --font-gilroy: var(--font-montserrat), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Shadows */
+  --shadow-sm: rgba(71, 103, 136, 0.04) 0px 4px 5px 0px, rgba(71, 103, 136, 0.03) 0px 4px 10px 0px, rgba(71, 103, 136, 0.05) 0px 10px 20px 0px;
+  --shadow-card: rgba(71, 103, 136, 0.04) 0px 4px 5px 0px, rgba(71, 103, 136, 0.03) 0px 8px 15px 0px, rgba(71, 103, 136, 0.08) 0px 30px 50px 0px;
+  --shadow-button: rgba(71, 103, 136, 0.04) 0px 4px 5px 0px, rgba(71, 103, 136, 0.03) 0px 8px 15px 0px, rgba(71, 103, 136, 0.06) 0px 15px 30px 0px;
+
+  --background: var(--color-cloud-mist);
+  --foreground: var(--color-text-black);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-gilroy);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-midnight-indigo: #0b3558;
+  --color-action-blue: #006bff;
+  --color-lavender-glow: #e55cff;
+  --color-royal-amethyst: #8247f5;
+  --color-sunset-gold: #ffa600;
+  --color-skybound-blue: #0099ff;
+  --color-ocean-glimmer: #bb32d5;
+  --color-glacier-blue: #004eba;
+  --color-snow-white: #ffffff;
+  --color-cloud-mist: #f8f9fb;
+  --color-pale-gray: #e7edf6;
+  --color-slate-blue: #476788;
+  --color-steel-gray: #a6bbd1;
+  --color-platinum-tint: #d4e0ed;
+  --color-outline-gray: #e6e6e6;
+  --color-text-black: #0a0a0a;
+
+  --radius-card: 16px;
+  --radius-button: 8px;
+  --radius-badge: 50px;
+
+  --shadow-card: var(--shadow-card);
+  --shadow-button: var(--shadow-button);
+  --shadow-interactive: var(--shadow-sm);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-gilroy);
+  font-size: 14px;
+  line-height: 1.71;
+}
+
+/* Component utilities */
+.card-floating {
+  background: var(--color-snow-white);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.btn-primary {
+  background: var(--color-action-blue);
+  color: var(--color-snow-white);
+  border-radius: var(--radius-button);
+  padding: 6px 16px;
+  font-weight: 600;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #0056d6;
+  box-shadow: var(--shadow-button);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-midnight-indigo);
+  border-radius: var(--radius-button);
+  padding: 6px 16px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  color: var(--color-action-blue);
+}
+
+.badge-info {
+  background: var(--color-pale-gray);
+  color: var(--color-glacier-blue);
+  border-radius: var(--radius-badge);
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.nav-link {
+  color: var(--color-midnight-indigo);
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link[data-active="true"] {
+  color: var(--color-action-blue);
+}
+
+.shadow-interactive {
+  box-shadow: var(--shadow-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -24,31 +20,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="flex h-full flex-col overflow-hidden">
-        <header className="sticky top-0 z-40 border-b border-white/10 bg-black/40 backdrop-blur">
+    <html lang="en" className={`${montserrat.variable} h-full antialiased`}>
+      <body className="flex h-full flex-col overflow-hidden bg-cloud-mist text-text-black">
+        <header className="sticky top-0 z-40 border-b border-platinum-tint bg-snow-white shadow-[0_1px_0_rgba(71,103,136,0.06)]">
           <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-xl bg-[radial-gradient(circle_at_30%_30%,#14b8a6,transparent_55%),radial-gradient(circle_at_70%_70%,#fb923c,transparent_55%)] ring-1 ring-white/15" />
+              <div
+                className="relative h-9 w-9 overflow-hidden rounded-lg"
+                style={{ boxShadow: "var(--shadow-sm)" }}
+              >
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,#e55cff,transparent_55%),radial-gradient(circle_at_70%_70%,#0099ff,transparent_55%),radial-gradient(circle_at_50%_50%,#006BFF,transparent_70%)]" />
+              </div>
               <div className="leading-tight">
-                <div className="text-sm font-semibold tracking-tight text-white">HR Nexus</div>
-                <div className="text-xs text-white/60">Leave · Payroll · Talent AI</div>
+                <div className="text-sm font-semibold tracking-tight text-midnight-indigo">HR Nexus</div>
+                <div className="text-xs text-slate-blue">Leave · Payroll · Talent AI</div>
               </div>
             </div>
-            <nav className="flex items-center gap-2 text-sm">
-              <Link
-                href="/"
-                className="rounded-full px-3 py-1.5 text-white/80 transition hover:bg-white/10 hover:text-white"
-              >
+            <nav className="flex items-center gap-1 text-sm">
+              <Link href="/" className="nav-link rounded-lg px-3 py-1.5">
                 Chat
               </Link>
-              <Link
-                href="/admin"
-                className="rounded-full px-3 py-1.5 text-white/80 transition hover:bg-white/10 hover:text-white"
-              >
+              <Link href="/admin" className="nav-link rounded-lg px-3 py-1.5">
                 Admin
               </Link>
             </nav>
