@@ -6,12 +6,13 @@ export const runtime = "nodejs";
 
 const bodySchema = z.object({
   runId: z.number().int().positive(),
+  approvedBy: z.string().min(1).optional(),
 });
 
 export async function POST(request: Request) {
   try {
     const json = bodySchema.parse(await request.json());
-    const result = await confirmPayrollRun(json.runId);
+    const result = await confirmPayrollRun(json.runId, json.approvedBy ?? "mgr_001");
 
     return NextResponse.json({
       ...result,
@@ -25,4 +26,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
-

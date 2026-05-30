@@ -1,7 +1,7 @@
+import { PayrollItemStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
-import fs from "node:fs/promises";
 import { prisma } from "@/lib/prisma";
-import { ensureDir, inputXlsxPath, runFolder } from "@/lib/storage";
+import { inputXlsxKey, runFolder, writeArtifact } from "@/lib/storage";
 import { isoDate, maskBankAccount } from "@/lib/utils";
 import { parsePayrollWorkbook } from "@/lib/payroll/excel";
 
@@ -11,6 +11,14 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get("file");
+    const actorId = String(formData.get("actorEmployeeId") ?? "");
+
+    if (actorId) {
+      const actor = await prisma.employee.findUnique({ where: { id: actorId } });
+      if (actor?.role !== "HR_ADMIN") {
+        return NextResponse.json({ error: "Only HR can upload payroll files." }, { status: 403 });
+      }
+    }
 
     if (!file || !(file instanceof File)) {
       return NextResponse.json({ error: "Missing file upload." }, { status: 400 });
@@ -38,10 +46,13 @@ export async function POST(request: Request) {
       });
 
       const day = isoDate(new Date());
-      const runDir = runFolder(run.id, day);
-      await ensureDir(runDir);
-      const inputPath = inputXlsxPath(runDir, file.name);
-      await fs.writeFile(inputPath, buffer);
+      const runKey = runFolder(run.id, day);
+      const objectKey = inputXlsxKey(runKey, file.name);
+      const inputPath = await writeArtifact(
+        objectKey,
+        buffer,
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      );
 
       const itemsData = rows.map((r) => ({
         runId: run.id,
@@ -51,7 +62,7 @@ export async function POST(request: Request) {
         bankAccount: r.bankAccount,
         amount: Number.isFinite(r.amount) ? r.amount : 0,
         note: r.note ?? null,
-        status: r.issues.length ? "FAILED" : "QUEUED",
+        status: (r.issues.length ? "FAILED" : "QUEUED") as PayrollItemStatus,
         message: r.issues.length ? r.issues.join("; ") : null,
       }));
 
@@ -93,4 +104,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
-

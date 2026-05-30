@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { daysBetweenInclusive } from "@/lib/utils";
+import { applyApprovedLeave } from "@/lib/leave/balance";
 
 export const runtime = "nodejs";
 
@@ -12,16 +14,21 @@ const bodySchema = z.object({
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const leaveId = Number(id);
     if (!Number.isFinite(leaveId)) {
       return NextResponse.json({ error: "Invalid leave request id." }, { status: 400 });
     }
 
     const body = bodySchema.parse(await request.json());
+
+    const existing = await prisma.leaveRequest.findUnique({ where: { id: leaveId } });
+    if (!existing) {
+      return NextResponse.json({ error: "Leave request not found." }, { status: 404 });
+    }
 
     const updated = await prisma.leaveRequest.update({
       where: { id: leaveId },
@@ -32,6 +39,11 @@ export async function POST(
         decisionReason: body.reason ?? null,
       },
     });
+
+    if (body.decision === "APPROVE" && existing.status === "PENDING") {
+      const days = daysBetweenInclusive(existing.startDate, existing.endDate);
+      await applyApprovedLeave(existing.employeeId, existing.type, days);
+    }
 
     await prisma.auditLog.create({
       data: {

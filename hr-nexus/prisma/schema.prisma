@@ -27,7 +27,7 @@ enum LeaveStatus {
 
 enum PayrollRunStatus {
   DRAFT
-  CONFIRMED
+  PENDING_BOSS
   DONE
 }
 
@@ -38,12 +38,31 @@ enum PayrollItemStatus {
   SENT_SIMULATED
 }
 
+enum JobStatus {
+  OPEN
+  CLOSED
+}
+
+enum ApplicationStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  HR_SHORTLISTED
+  PENDING_BOSS
+  BOSS_APPROVED
+  INTERVIEW_INVITED
+  ACCEPTED
+  REJECTED
+}
+
 model Employee {
-  id   String @id
-  name String
-  role Role
+  id         String @id
+  name       String
+  role       Role
+  annualUsed Int    @default(0)
+  sickUsed   Int    @default(0)
 
   leaveRequests LeaveRequest[]
+  chatMessages  ChatMessage[]
 
   @@map("employees")
 }
@@ -68,14 +87,18 @@ model LeaveRequest {
 }
 
 model PayrollRun {
-  id                  Int             @id @default(autoincrement())
-  createdAt            DateTime        @default(now())
-  status               PayrollRunStatus @default(DRAFT)
-  totalAmount          Decimal         @default(0)
-  inputFilename        String
-  inputStoragePath     String
-  bankBatchStoragePath String?
+  id                    Int              @id @default(autoincrement())
+  createdAt             DateTime         @default(now())
+  status                PayrollRunStatus @default(DRAFT)
+  totalAmount           Decimal          @default(0)
+  inputFilename         String
+  inputStoragePath      String
+  bankBatchStoragePath  String?
   resultXlsxStoragePath String?
+  requestedBy           String?
+  requestedAt           DateTime?
+  approvedBy            String?
+  approvedAt            DateTime?
 
   items PayrollItem[]
 
@@ -83,22 +106,35 @@ model PayrollRun {
 }
 
 model PayrollItem {
-  id           Int             @id @default(autoincrement())
-  runId        Int
+  id              Int               @id @default(autoincrement())
+  runId           Int
   sourceRowNumber Int
-  employeeName String
-  email        String
-  bankAccount  String
-  amount       Decimal
-  note         String?
-  status       PayrollItemStatus @default(QUEUED)
-  message      String?
-  processedAt  DateTime?
+  employeeName    String
+  email           String
+  bankAccount     String
+  amount          Decimal
+  note            String?
+  status          PayrollItemStatus @default(QUEUED)
+  message         String?
+  processedAt     DateTime?
 
   run PayrollRun @relation(fields: [runId], references: [id], onDelete: Cascade)
 
   @@index([runId])
   @@map("payroll_items")
+}
+
+model ChatMessage {
+  id          Int      @id @default(autoincrement())
+  sessionId   String
+  role        String
+  payloadJson String
+  createdAt   DateTime @default(now())
+
+  employee Employee @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+  @@map("chat_messages")
 }
 
 model AuditLog {
@@ -108,4 +144,52 @@ model AuditLog {
   createdAt   DateTime @default(now())
 
   @@map("audit_logs")
+}
+
+model JobPosting {
+  id              String    @id
+  title           String
+  department      String
+  requirements    String
+  summary         String    @default("")
+  highlightsJson  String    @default("[]")
+  location        String    @default("")
+  employmentType  String    @default("Full-time")
+  fullDescription String    @default("")
+  status          JobStatus @default(OPEN)
+  createdAt       DateTime  @default(now())
+
+  applications CvApplication[]
+
+  @@map("job_postings")
+}
+
+model CvApplication {
+  id               Int               @id @default(autoincrement())
+  jobId            String
+  candidateName    String
+  candidateEmail   String
+  phone            String?
+  originalFilename String
+  storagePath      String
+  parsedText       String?
+  matchScore       Float             @default(0)
+  matchDetailsJson String            @default("[]")
+  status           ApplicationStatus @default(SUBMITTED)
+  hrShortlisted    Boolean           @default(false)
+  bossApproved     Boolean           @default(false)
+  hrDecisionBy     String?
+  hrDecisionAt     DateTime?
+  bossDecisionBy   String?
+  bossDecisionAt   DateTime?
+  decisionReason   String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  job JobPosting @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId, matchScore])
+  @@index([candidateEmail])
+  @@index([status])
+  @@map("cv_applications")
 }

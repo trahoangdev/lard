@@ -49,9 +49,13 @@ function cellNumber(row: ExcelJS.Row, col: number | undefined) {
   return Number(raw);
 }
 
+function asExcelBuffer(buffer: Buffer) {
+  return buffer as unknown as ExcelJS.Buffer;
+}
+
 export async function parsePayrollWorkbook(buffer: Buffer) {
   const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.load(buffer);
+  await workbook.xlsx.load(asExcelBuffer(buffer));
   const worksheet = workbook.worksheets[0];
   if (!worksheet) throw new Error("No worksheet found in Excel file.");
 
@@ -102,7 +106,7 @@ export async function buildPayrollResultXlsx(input: Buffer, rowStatusByRowNumber
   processedAt?: Date | null;
 }>) {
   const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.load(input);
+  await workbook.xlsx.load(asExcelBuffer(input));
   const worksheet = workbook.worksheets[0];
   if (!worksheet) throw new Error("No worksheet found in Excel file.");
 

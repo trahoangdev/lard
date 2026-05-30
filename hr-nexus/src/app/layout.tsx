@@ -28,14 +28,14 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="flex h-full flex-col overflow-hidden">
         <header className="sticky top-0 z-40 border-b border-white/10 bg-black/40 backdrop-blur">
           <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-xl bg-[radial-gradient(circle_at_30%_30%,#7c3aed,transparent_55%),radial-gradient(circle_at_70%_70%,#22d3ee,transparent_55%)] ring-1 ring-white/15" />
+              <div className="h-9 w-9 rounded-xl bg-[radial-gradient(circle_at_30%_30%,#14b8a6,transparent_55%),radial-gradient(circle_at_70%_70%,#fb923c,transparent_55%)] ring-1 ring-white/15" />
               <div className="leading-tight">
                 <div className="text-sm font-semibold tracking-tight text-white">HR Nexus</div>
-                <div className="text-xs text-white/60">Demo Command Center</div>
+                <div className="text-xs text-white/60">Leave · Payroll · Talent AI</div>
               </div>
             </div>
             <nav className="flex items-center gap-2 text-sm">

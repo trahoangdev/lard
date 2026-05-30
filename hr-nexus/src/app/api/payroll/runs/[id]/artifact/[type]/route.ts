@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
-import fs from "node:fs/promises";
 import path from "node:path";
 import { prisma } from "@/lib/prisma";
+import { readArtifact } from "@/lib/storage";
 
 export const runtime = "nodejs";
 
 export async function GET(
   _request: Request,
-  { params }: { params: { id: string; type: string } },
+  { params }: { params: Promise<{ id: string; type: string }> },
 ) {
   try {
-    const { id, type } = params;
+    const { id, type } = await params;
     const runId = Number(id);
     if (!Number.isFinite(runId)) {
       return NextResponse.json({ error: "Invalid run id." }, { status: 400 });
@@ -28,7 +28,7 @@ export async function GET(
 
     if (!filePath) return NextResponse.json({ error: "Artifact not available." }, { status: 404 });
 
-    const buffer = await fs.readFile(filePath);
+    const buffer = await readArtifact(filePath);
     const filename = path.basename(filePath);
 
     const contentType =
