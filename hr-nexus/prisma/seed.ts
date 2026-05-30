@@ -151,9 +151,9 @@ async function main() {
     { employeeId: "emp_002", startDate: "2026-06-02", endDate: "2026-06-04", type: LeaveType.ANNUAL, reason: "Family trip", status: LeaveStatus.PENDING },
     { employeeId: "emp_003", startDate: "2026-05-28", endDate: "2026-05-30", type: LeaveType.SICK, reason: "Flu", status: LeaveStatus.PENDING },
     { employeeId: "emp_005", startDate: "2026-06-10", endDate: "2026-06-12", type: LeaveType.ANNUAL, reason: "Wedding", status: LeaveStatus.PENDING },
-    { employeeId: "emp_006", startDate: "2026-05-15", endDate: "2026-05-16", type: LeaveType.ANNUAL, reason: "Personal", status: LeaveStatus.APPROVED, decidedBy: "mgr_001" },
-    { employeeId: "emp_008", startDate: "2026-04-01", endDate: "2026-04-03", type: LeaveType.SICK, reason: "Recovery", status: LeaveStatus.APPROVED, decidedBy: "mgr_001" },
-    { employeeId: "emp_009", startDate: "2026-03-10", endDate: "2026-03-10", type: LeaveType.ANNUAL, reason: "Errand", status: LeaveStatus.REJECTED, decidedBy: "mgr_001" },
+    { employeeId: "emp_006", startDate: "2026-05-15", endDate: "2026-05-16", type: LeaveType.ANNUAL, reason: "Personal", status: LeaveStatus.APPROVED, decidedBy: "hr_001" },
+    { employeeId: "emp_008", startDate: "2026-04-01", endDate: "2026-04-03", type: LeaveType.SICK, reason: "Recovery", status: LeaveStatus.APPROVED, decidedBy: "hr_001" },
+    { employeeId: "emp_009", startDate: "2026-03-10", endDate: "2026-03-10", type: LeaveType.ANNUAL, reason: "Errand", status: LeaveStatus.REJECTED, decidedBy: "hr_001" },
   ];
 
   const existing = await prisma.leaveRequest.count();

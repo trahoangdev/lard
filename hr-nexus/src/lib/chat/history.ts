@@ -35,10 +35,10 @@ export async function clearChatHistory(sessionId: string) {
 
 export function defaultWelcome(role: string) {
   if (role === "HR_ADMIN") {
-    return "HR workspace — run payroll, draft job postings with AI, and manage recruitment.";
+    return "HR workspace — approve leave requests, run payroll, draft job postings, and manage recruitment.";
   }
   if (role === "MANAGER") {
-    return "Boss workspace — approve pending payroll runs and review team leave statistics.";
+    return "Boss workspace — approve payroll, review leave timeline (requested / approved / dates), and team stats.";
   }
   return "Employee workspace — request leave, check your balance, or track request status.";
 }

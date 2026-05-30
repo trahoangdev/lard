@@ -7,6 +7,7 @@ import { resolveIntent } from "@/lib/chat/resolve-intent";
 import { parseIntent } from "@/lib/chat/parse";
 import { chatRequestSchema } from "@/lib/chat/schemas";
 import { getLeaveBalance, validateLeaveDraft } from "@/lib/leave/balance";
+import { getPendingLeaveForHr } from "@/lib/leave/workflow";
 import { confirmPayrollRun, submitPayrollForBoss } from "@/lib/payroll/confirm";
 import { prisma } from "@/lib/prisma";
 import { findOpenJobs, getOpenJobDetails } from "@/lib/recruitment/jobs";
@@ -46,6 +47,7 @@ type BotMessage =
         job?: { id: string; title: string; department: string; requirements: string };
         email?: string;
         runId?: number;
+        leaveId?: number;
       }>;
     };
 
@@ -295,7 +297,7 @@ export async function POST(request: Request) {
       });
 
       const messages = [
-        { kind: "text", text: "Submitted. Your manager will review it." } satisfies BotMessage,
+        { kind: "text", text: "Submitted. HR will review your request." } satisfies BotMessage,
         {
           kind: "card",
           card: {
@@ -306,6 +308,7 @@ export async function POST(request: Request) {
             startDate: input.context.draft.startDate,
             endDate: input.context.draft.endDate,
             reason: created.reason,
+            requestedAt: created.createdAt.toISOString(),
           },
         } satisfies BotMessage,
       ];
@@ -637,7 +640,7 @@ export async function POST(request: Request) {
       } else {
         const hints =
           actor?.role === "HR_ADMIN"
-            ? "• Run payroll\n• Draft job posting\n• How many CVs for Software Engineer?\n• Submit shortlist to boss\n• Recruitment dataset"
+            ? "• Run payroll\n• Show pending leave requests\n• Draft job posting\n• How many CVs for Software Engineer?\n• Submit shortlist to boss\n• Recruitment dataset"
             : actor?.role === "MANAGER"
               ? "• Show pending payroll approvals\n• Pending recruitment approvals\n• Show leave statistics"
               : "• Request leave 2026-06-10 to 2026-06-12 annual reason family\n• What's my leave balance?\n• Is my leave approved?";
@@ -668,7 +671,47 @@ export async function POST(request: Request) {
       const messages = [
         {
           kind: "card",
-          card: { type: "leave_stats", ...stats },
+          card: { type: "leave_stats", ...stats, actorRole: actor!.role },
+        } satisfies BotMessage,
+      ];
+      await persistExchange(input.actorEmployeeId, message, messages);
+      return NextResponse.json({ messages, meta: chatMeta(source) });
+    }
+
+    if (intent.kind === "leave_pending") {
+      if (actor?.role !== "HR_ADMIN") return roleDenied(actor?.role ?? "EMPLOYEE", "Leave approvals");
+
+      const pending = await getPendingLeaveForHr();
+
+      if (!pending.length) {
+        const messages = [{ kind: "text", text: "No leave requests waiting for HR approval." } satisfies BotMessage];
+        await persistExchange(input.actorEmployeeId, message, messages);
+        return NextResponse.json({ messages, meta: chatMeta(source) });
+      }
+
+      const messages = [
+        {
+          kind: "card",
+          card: {
+            type: "leave_pending_list",
+            requests: pending.map((r) => ({
+              id: r.id,
+              employeeName: r.employee.name,
+              type: r.type,
+              startDate: r.startDate.toISOString().slice(0, 10),
+              endDate: r.endDate.toISOString().slice(0, 10),
+              reason: r.reason,
+              requestedAt: r.createdAt.toISOString(),
+            })),
+          },
+        } satisfies BotMessage,
+        { kind: "text", text: "Review each request below — approve or reject." } satisfies BotMessage,
+        {
+          kind: "actions",
+          actions: pending.flatMap((r) => [
+            { id: "approve_leave", label: `Approve #${r.id} · ${r.employee.name}`, tone: "primary" as const, leaveId: r.id },
+            { id: "reject_leave", label: `Reject #${r.id}`, tone: "danger" as const, leaveId: r.id },
+          ]),
         } satisfies BotMessage,
       ];
       await persistExchange(input.actorEmployeeId, message, messages);
@@ -828,6 +871,8 @@ export async function POST(request: Request) {
             startDate: record.startDate.toISOString().slice(0, 10),
             endDate: record.endDate.toISOString().slice(0, 10),
             reason: record.reason,
+            requestedAt: record.createdAt.toISOString(),
+            approvedAt: record.decidedAt?.toISOString() ?? null,
             decidedBy: record.decidedBy,
             decisionReason: record.decisionReason,
           },

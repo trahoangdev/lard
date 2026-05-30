@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { annualEntitlement, SICK_ENTITLEMENT } from "@/lib/leave/policy";
+import { getLeaveTimeline } from "@/lib/leave/workflow";
 
 export async function getOrgLeaveStats() {
   const employees = await prisma.employee.findMany({
@@ -12,18 +13,20 @@ export async function getOrgLeaveStats() {
     },
   });
 
-  const [pendingLeaves, approvedLeaves, rejectedLeaves, payrollPendingBoss] = await Promise.all([
+  const [pendingLeaves, approvedLeaves, rejectedLeaves, payrollPendingBoss, timeline] = await Promise.all([
     prisma.leaveRequest.count({ where: { status: "PENDING" } }),
     prisma.leaveRequest.count({ where: { status: "APPROVED" } }),
     prisma.leaveRequest.count({ where: { status: "REJECTED" } }),
     prisma.payrollRun.count({ where: { status: "PENDING_BOSS" } }),
+    getLeaveTimeline(30),
   ]);
 
-  const totalAnnualUsed = employees.reduce((s, e) => s + e.annualUsed, 0);
-  const totalSickUsed = employees.reduce((s, e) => s + e.sickUsed, 0);
-  const totalAnnualEntitlement = employees.reduce((s, e) => s + annualEntitlement(e.role), 0);
+  const staff = employees.filter((e) => e.id !== "applicant");
+  const totalAnnualUsed = staff.reduce((s, e) => s + e.annualUsed, 0);
+  const totalSickUsed = staff.reduce((s, e) => s + e.sickUsed, 0);
+  const totalAnnualEntitlement = staff.reduce((s, e) => s + annualEntitlement(e.role), 0);
 
-  const byEmployee = employees.map((e) => ({
+  const byEmployee = staff.map((e) => ({
     id: e.id,
     name: e.name,
     role: e.role,
@@ -38,7 +41,7 @@ export async function getOrgLeaveStats() {
 
   return {
     summary: {
-      headcount: employees.length,
+      headcount: staff.length,
       pendingLeaves,
       approvedLeaves,
       rejectedLeaves,
@@ -46,8 +49,9 @@ export async function getOrgLeaveStats() {
       totalAnnualUsed,
       totalSickUsed,
       totalAnnualEntitlement,
-      avgAnnualUsed: employees.length ? Math.round((totalAnnualUsed / employees.length) * 10) / 10 : 0,
+      avgAnnualUsed: staff.length ? Math.round((totalAnnualUsed / staff.length) * 10) / 10 : 0,
     },
     employees: byEmployee,
+    timeline,
   };
 }

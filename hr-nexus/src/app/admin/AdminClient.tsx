@@ -24,6 +24,11 @@ function badgeTone(status: string) {
   return "bg-pale-gray text-slate-blue";
 }
 
+function fmtDate(iso: string | null | undefined) {
+  if (!iso) return "—";
+  return iso.slice(0, 10);
+}
+
 export function AdminClient({ initial }: { initial: LeaveRow[] }) {
   const [rows, setRows] = useState<LeaveRow[]>(initial);
   const [busyId, setBusyId] = useState<number | null>(null);
@@ -36,7 +41,7 @@ export function AdminClient({ initial }: { initial: LeaveRow[] }) {
       const res = await fetch(`/api/leave-requests/${id}/decision`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ decision, reason, decidedBy: "mgr_001" }),
+        body: JSON.stringify({ decision, actorEmployeeId: "hr_001", reason }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error ?? "Decision failed");
@@ -73,11 +78,12 @@ export function AdminClient({ initial }: { initial: LeaveRow[] }) {
     <div className="card-floating">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-platinum-tint px-6 py-5">
         <div>
-          <div className="text-xs font-medium uppercase tracking-[0.15em] text-steel-gray">Admin</div>
-          <div className="mt-1 text-lg font-semibold tracking-tight text-midnight-indigo">Leave Requests</div>
+          <div className="text-xs font-medium uppercase tracking-[0.15em] text-steel-gray">HR Admin</div>
+          <div className="mt-1 text-lg font-semibold tracking-tight text-midnight-indigo">Leave Approvals</div>
+          <div className="mt-1 text-xs text-slate-blue">Employees submit via Chat — HR approves here or in Chat.</div>
         </div>
         <div className="badge-info !rounded-full !px-4 !py-2">
-          Pending: <span className="font-semibold">{pendingCount}</span>
+          Pending HR: <span className="font-semibold">{pendingCount}</span>
         </div>
       </div>
 
@@ -87,7 +93,9 @@ export function AdminClient({ initial }: { initial: LeaveRow[] }) {
             <tr className="border-b border-platinum-tint">
               <th className="px-6 py-4">ID</th>
               <th className="px-6 py-4">Employee</th>
-              <th className="px-6 py-4">Dates</th>
+              <th className="px-6 py-4">Leave dates</th>
+              <th className="px-6 py-4">Requested</th>
+              <th className="px-6 py-4">Approved</th>
               <th className="px-6 py-4">Type</th>
               <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4">Actions</th>
@@ -101,9 +109,11 @@ export function AdminClient({ initial }: { initial: LeaveRow[] }) {
                   <div className="font-semibold text-midnight-indigo">{r.employeeName}</div>
                   <div className="mt-1 text-xs text-slate-blue">{r.reason}</div>
                 </td>
-                <td className="px-6 py-4 text-midnight-indigo">
+                <td className="px-6 py-4 whitespace-nowrap text-midnight-indigo">
                   {r.startDate} → {r.endDate}
                 </td>
+                <td className="px-6 py-4 whitespace-nowrap text-slate-blue">{fmtDate(r.createdAt)}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-slate-blue">{fmtDate(r.decidedAt)}</td>
                 <td className="px-6 py-4 text-midnight-indigo">{r.type}</td>
                 <td className="px-6 py-4">
                   <span className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeTone(r.status)}`}>
@@ -141,8 +151,8 @@ export function AdminClient({ initial }: { initial: LeaveRow[] }) {
             ))}
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-10 text-center text-slate-blue">
-                  No leave requests yet. Create one from the Chat page.
+                <td colSpan={8} className="px-6 py-10 text-center text-slate-blue">
+                  No leave requests yet. Create one from the Chat page as an employee.
                 </td>
               </tr>
             ) : null}

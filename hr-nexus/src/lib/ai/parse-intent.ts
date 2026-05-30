@@ -9,6 +9,7 @@ const aiIntentSchema = z.object({
     "leave_balance",
     "leave_status",
     "leave_stats",
+    "leave_pending",
     "payroll_run",
     "payroll_pending",
     "payroll_approve",
@@ -61,6 +62,7 @@ Rules:
 - payroll_pending: Boss asks for pending payroll approvals.
 - payroll_approve: Boss approves a payroll run.
 - leave_stats: HR or Boss asks for team leave statistics.
+- leave_pending: HR asks for pending leave requests awaiting approval.
 - job_list: user wants to see open job postings.
 - job_apply: applicant wants to apply; set jobTitle if mentioned.
 - job_details: applicant asks about job description, requirements, responsibilities, or role info; set jobTitle if a specific role is mentioned.
@@ -102,6 +104,7 @@ export async function parseIntentWithAi(message: string, now = new Date()): Prom
   }
 
   if (data.kind === "leave_stats") return { kind: "leave_stats" };
+  if (data.kind === "leave_pending") return { kind: "leave_pending" };
   if (data.kind === "payroll_pending") return { kind: "payroll_pending" };
   if (data.kind === "payroll_approve") return { kind: "payroll_approve" };
 

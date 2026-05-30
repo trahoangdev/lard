@@ -43,6 +43,7 @@ type EmployeeOption = { id: string; name: string; role: string };
 
 type LeaveStatsCard = {
   type: "leave_stats";
+  actorRole?: string;
   summary: {
     headcount: number;
     pendingLeaves: number;
@@ -65,6 +66,32 @@ type LeaveStatsCard = {
     sickTotal: number;
     sickRemaining: number;
     pendingRequests: number;
+  }>;
+  timeline: Array<{
+    id: number;
+    employeeName: string;
+    employeeId: string;
+    type: string;
+    startDate: string;
+    endDate: string;
+    reason: string;
+    status: string;
+    requestedAt: string;
+    approvedAt: string | null;
+    decidedBy: string | null;
+  }>;
+};
+
+type LeavePendingListCard = {
+  type: "leave_pending_list";
+  requests: Array<{
+    id: number;
+    employeeName: string;
+    type: string;
+    startDate: string;
+    endDate: string;
+    reason: string;
+    requestedAt: string;
   }>;
 };
 
@@ -132,6 +159,7 @@ type ChatAction = {
   job?: { id: string; title: string; department: string; requirements: string };
   email?: string;
   runId?: number;
+  leaveId?: number;
 };
 
 type JobApplyCardPayload = {
@@ -210,6 +238,8 @@ type LeaveRequestCard = {
   startDate: string;
   endDate: string;
   reason: string;
+  requestedAt?: string;
+  approvedAt?: string | null;
   decidedBy?: string | null;
   decisionReason?: string | null;
 };
@@ -265,6 +295,7 @@ type CardPayload =
   | PayrollRunCard
   | PayrollPendingListCard
   | PayrollSubmittedCard
+  | LeavePendingListCard
   | RecruitmentLeaderboardCard
   | CandidateProfileCardPayload
   | JobListCardPayload
@@ -308,8 +339,8 @@ function roleLabel(role: string, id?: string) {
 
 function welcomeFor(role: string, id?: string) {
   if (id === "applicant") return "Welcome! Tap a job below to apply — no typing needed.";
-  if (role === "HR_ADMIN") return "HR workspace — payroll, recruitment pipeline, and AI job posting drafts.";
-  if (role === "MANAGER") return "Boss workspace — approve payroll, review shortlisted candidates, team statistics.";
+  if (role === "HR_ADMIN") return "HR workspace — approve leave requests, payroll, recruitment, and job drafts.";
+  if (role === "MANAGER") return "Boss workspace — approve payroll, review leave timeline & team statistics.";
   return "Employee workspace — request leave, check balance, track status.";
 }
 
@@ -428,7 +459,7 @@ export default function Home() {
       return ["__browse_jobs__", "__job_details__", "__check_status__", "__upload_cv__"];
     }
     if (currentRole === "HR_ADMIN") {
-      return ["Run payroll", "Draft job posting", "How many CVs for Software Engineer?", "Submit shortlist to boss", "Recruitment dataset"];
+      return ["Show pending leave requests", "Run payroll", "Draft job posting", "How many CVs for Software Engineer?", "Submit shortlist to boss", "Recruitment dataset"];
     }
     if (currentRole === "MANAGER") {
       return ["Show pending payroll approvals", "Pending recruitment approvals", "Show leave statistics"];
@@ -629,6 +660,83 @@ export default function Home() {
     }
   }
 
+  async function handleLeaveDecision(leaveId: number, decision: "APPROVE" | "REJECT") {
+    setBusy(true);
+    try {
+      const reason = decision === "REJECT" ? window.prompt("Rejection reason (optional):") ?? undefined : undefined;
+      const res = await fetch(`/api/leave-requests/${leaveId}/decision`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ decision, actorEmployeeId, reason }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error ?? "Decision failed");
+
+      const updated = json.leaveRequest as {
+        id: number;
+        status: string;
+        type: string;
+        reason: string;
+        startDate: string;
+        endDate: string;
+        decidedAt: string | null;
+        decidedBy: string | null;
+        decisionReason: string | null;
+        createdAt: string;
+      };
+
+      updateSession(actorEmployeeId, {
+        items: [
+          ...items,
+          {
+            id: uid(),
+            from: "bot",
+            payload: {
+              kind: "text",
+              text: `Leave request #${leaveId} ${decision === "APPROVE" ? "approved" : "rejected"}.`,
+            },
+          },
+          {
+            id: uid(),
+            from: "bot",
+            payload: {
+              kind: "card",
+              card: {
+                type: "leave_request",
+                id: updated.id,
+                status: updated.status,
+                typeName: updated.type,
+                startDate: updated.startDate.slice(0, 10),
+                endDate: updated.endDate.slice(0, 10),
+                reason: updated.reason,
+                requestedAt: updated.createdAt,
+                approvedAt: updated.decidedAt,
+                decidedBy: updated.decidedBy,
+                decisionReason: updated.decisionReason,
+              } satisfies LeaveRequestCard,
+            },
+          },
+        ],
+      });
+    } catch (err) {
+      updateSession(actorEmployeeId, {
+        items: [
+          ...items,
+          {
+            id: uid(),
+            from: "bot",
+            payload: {
+              kind: "text",
+              text: `Leave decision error: ${err instanceof Error ? err.message : "Failed"}`,
+            },
+          },
+        ],
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function handleAction(action: ChatAction) {
     if (action.id === "select_job" && action.job) {
       selectJob(action.job);
@@ -667,6 +775,16 @@ export default function Home() {
 
     if (action.id === "approve_payroll_run" && action.runId) {
       await send(`approve payroll run ${action.runId}`, undefined);
+      return;
+    }
+
+    if (action.id === "approve_leave" && action.leaveId) {
+      await handleLeaveDecision(action.leaveId, "APPROVE");
+      return;
+    }
+
+    if (action.id === "reject_leave" && action.leaveId) {
+      await handleLeaveDecision(action.leaveId, "REJECT");
       return;
     }
 
@@ -923,6 +1041,7 @@ export default function Home() {
                       onSelectJob={selectJob}
                       onUploadCv={() => cvFileRef.current?.click()}
                       onApprovePayrollRun={(runId) => void send(`approve payroll run ${runId}`, undefined)}
+                      onLeaveDecision={(id, d) => void handleLeaveDecision(id, d)}
                       selectedJobId={cvApplyJob?.jobId ?? null}
                       busy={busy}
                     />
@@ -1028,6 +1147,7 @@ function Card({
   onSelectJob,
   onUploadCv,
   onApprovePayrollRun,
+  onLeaveDecision,
   selectedJobId,
   busy,
 }: {
@@ -1041,6 +1161,7 @@ function Card({
   onSelectJob?: (job: { id: string; title: string; department: string; requirements: string }) => void;
   onUploadCv?: () => void;
   onApprovePayrollRun?: (runId: number) => void;
+  onLeaveDecision?: (leaveId: number, decision: "APPROVE" | "REJECT") => void;
   selectedJobId?: string | null;
   busy?: boolean;
 }) {
@@ -1131,6 +1252,53 @@ function Card({
     return <RecruitmentBossPendingCard candidates={card.candidates} />;
   }
 
+  if (card?.type === "leave_pending_list") {
+    return (
+      <div className="card-floating max-w-[82%] p-5">
+        <div className="text-sm font-semibold tracking-tight text-midnight-indigo">Pending Leave — HR Review</div>
+        <div className="mt-1 text-xs text-slate-blue">{card.requests.length} request(s) awaiting approval</div>
+        <div className="mt-4 flex flex-col gap-2">
+          {card.requests.map((r) => (
+            <div key={r.id} className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3 text-sm">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <div className="font-semibold text-midnight-indigo">
+                    #{r.id} · {r.employeeName}
+                  </div>
+                  <div className="mt-1 text-slate-blue">
+                    {r.type} · {r.startDate} → {r.endDate}
+                  </div>
+                  <div className="mt-1 text-xs text-steel-gray">Requested {r.requestedAt.slice(0, 10)}</div>
+                  <div className="mt-1 text-slate-blue">{r.reason}</div>
+                </div>
+                {onLeaveDecision ? (
+                  <div className="flex shrink-0 gap-2">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => onLeaveDecision(r.id, "APPROVE")}
+                      className="btn-primary !px-3 !py-1.5 !text-xs disabled:opacity-50"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => onLeaveDecision(r.id, "REJECT")}
+                      className="rounded-lg border border-ocean-glimmer/30 bg-pale-gray px-3 py-1.5 text-xs font-medium text-ocean-glimmer disabled:opacity-50"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   if (card?.type === "recruitment_boss_done") {
     return (
       <div className="card-floating max-w-[82%] p-5">
@@ -1155,11 +1323,28 @@ function Card({
             <div className="mt-1 font-medium text-midnight-indigo">{String(card.typeName)}</div>
           </div>
           <div className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3">
-            <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Dates</div>
+            <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Leave dates</div>
             <div className="mt-1 font-medium text-midnight-indigo">
               {card.startDate} → {card.endDate}
             </div>
           </div>
+          {card.requestedAt ? (
+            <div className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3">
+              <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Requested</div>
+              <div className="mt-1 font-medium text-midnight-indigo">{card.requestedAt.slice(0, 10)}</div>
+            </div>
+          ) : null}
+          {card.approvedAt ? (
+            <div className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3">
+              <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">HR approved</div>
+              <div className="mt-1 font-medium text-midnight-indigo">{card.approvedAt.slice(0, 10)}</div>
+            </div>
+          ) : card.status === "PENDING" ? (
+            <div className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3">
+              <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Status</div>
+              <div className="mt-1 font-medium text-sunset-gold">Awaiting HR review</div>
+            </div>
+          ) : null}
           <div className="rounded-lg border border-platinum-tint bg-cloud-mist px-4 py-3 sm:col-span-2">
             <div className="text-xs font-medium uppercase tracking-[0.12em] text-steel-gray">Reason</div>
             <div className="mt-1 font-medium text-midnight-indigo">{card.reason}</div>
@@ -1210,13 +1395,21 @@ function Card({
   }
 
   if (card?.type === "leave_stats") {
+    const isBoss = card.actorRole === "MANAGER";
     return (
-      <div className="card-floating max-w-[82%] p-5">
-        <div className="text-sm font-semibold tracking-tight text-midnight-indigo">Team Leave Statistics</div>
+      <div className="card-floating max-w-[95%] p-5">
+        <div className="text-sm font-semibold tracking-tight text-midnight-indigo">
+          {isBoss ? "Team Leave Timeline" : "Team Leave Statistics"}
+        </div>
+        {isBoss ? (
+          <div className="mt-1 text-xs text-slate-blue">
+            When each person requested leave, when HR approved, and the leave dates.
+          </div>
+        ) : null}
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
             ["Headcount", card.summary.headcount],
-            ["Pending", card.summary.pendingLeaves],
+            ["Pending HR", card.summary.pendingLeaves],
             ["Approved", card.summary.approvedLeaves],
             ["Payroll waiting", card.summary.payrollPendingBoss],
           ].map(([label, val]) => (
@@ -1226,32 +1419,72 @@ function Card({
             </div>
           ))}
         </div>
-        <div className="mt-4 max-h-64 overflow-y-auto rounded-lg border border-platinum-tint bg-cloud-mist">
-          <table className="w-full text-left text-xs">
-            <thead className="sticky top-0 bg-pale-gray text-steel-gray">
-              <tr>
-                <th className="px-3 py-2">Name</th>
-                <th className="px-3 py-2">Annual</th>
-                <th className="px-3 py-2">Sick</th>
-                <th className="px-3 py-2">Pending</th>
-              </tr>
-            </thead>
-            <tbody>
-              {card.employees.map((e) => (
-                <tr key={e.id} className="border-t border-platinum-tint text-midnight-indigo">
-                  <td className="px-3 py-2">{e.name}</td>
-                  <td className="px-3 py-2">
-                    {e.annualRemaining}/{e.annualTotal}
-                  </td>
-                  <td className="px-3 py-2">
-                    {e.sickRemaining}/{e.sickTotal}
-                  </td>
-                  <td className="px-3 py-2">{e.pendingRequests}</td>
+
+        {card.timeline?.length ? (
+          <div className="mt-4 max-h-72 overflow-y-auto rounded-lg border border-platinum-tint bg-cloud-mist">
+            <table className="w-full text-left text-xs">
+              <thead className="sticky top-0 bg-pale-gray text-steel-gray">
+                <tr>
+                  <th className="px-3 py-2">Employee</th>
+                  <th className="px-3 py-2">Type</th>
+                  <th className="px-3 py-2">Leave dates</th>
+                  <th className="px-3 py-2">Requested</th>
+                  <th className="px-3 py-2">Approved</th>
+                  <th className="px-3 py-2">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {card.timeline.map((t) => (
+                  <tr key={t.id} className="border-t border-platinum-tint text-midnight-indigo">
+                    <td className="px-3 py-2 font-medium">{t.employeeName}</td>
+                    <td className="px-3 py-2">{t.type}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      {t.startDate} → {t.endDate}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap">{t.requestedAt.slice(0, 10)}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      {t.approvedAt ? t.approvedAt.slice(0, 10) : "—"}
+                    </td>
+                    <td className="px-3 py-2">
+                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${badgeTone(t.status)}`}>
+                        {t.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : null}
+
+        {!isBoss ? (
+          <div className="mt-4 max-h-48 overflow-y-auto rounded-lg border border-platinum-tint bg-cloud-mist">
+            <table className="w-full text-left text-xs">
+              <thead className="sticky top-0 bg-pale-gray text-steel-gray">
+                <tr>
+                  <th className="px-3 py-2">Name</th>
+                  <th className="px-3 py-2">Annual</th>
+                  <th className="px-3 py-2">Sick</th>
+                  <th className="px-3 py-2">Pending</th>
+                </tr>
+              </thead>
+              <tbody>
+                {card.employees.map((e) => (
+                  <tr key={e.id} className="border-t border-platinum-tint text-midnight-indigo">
+                    <td className="px-3 py-2">{e.name}</td>
+                    <td className="px-3 py-2">
+                      {e.annualRemaining}/{e.annualTotal}
+                    </td>
+                    <td className="px-3 py-2">
+                      {e.sickRemaining}/{e.sickTotal}
+                    </td>
+                    <td className="px-3 py-2">{e.pendingRequests}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : null}
       </div>
     );
   }

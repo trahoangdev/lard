@@ -12,6 +12,7 @@ export type ParsedIntent =
   | { kind: "leave_balance" }
   | { kind: "leave_status"; id?: number }
   | { kind: "leave_stats" }
+  | { kind: "leave_pending" }
   | { kind: "payroll_run" }
   | { kind: "payroll_pending" }
   | { kind: "payroll_approve"; runId?: number }
@@ -87,6 +88,10 @@ export function parseIntent(message: string): ParsedIntent {
   if (!text) return { kind: "help" };
 
   if (/(help|what can you do|examples)/i.test(text)) return { kind: "help" };
+
+  if (/(pending leave|leave approvals|leave requests waiting|approve leave requests)/i.test(text)) {
+    return { kind: "leave_pending" };
+  }
 
   if (/(leave stats|team stats|hr stats|statistics|headcount|dashboard)/i.test(text)) {
     return { kind: "leave_stats" };
