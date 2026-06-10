@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { annualEntitlement, SICK_ENTITLEMENT } from "@/lib/leave/policy";
 import { daysBetweenInclusive } from "@/lib/utils";
 
+
 export type LeaveBalanceView = {
   annual: { total: number; used: number; remaining: number };
   sick: { total: number; used: number; remaining: number };

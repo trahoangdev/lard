@@ -1,144 +1,92 @@
 @import "tailwindcss";
 
-:root {
-  /* Colors */
-  --color-midnight-indigo: #0b3558;
-  --color-action-blue: #006bff;
-  --color-lavender-glow: #e55cff;
-  --color-royal-amethyst: #8247f5;
-  --color-sunset-gold: #ffa600;
-  --color-skybound-blue: #0099ff;
-  --color-ocean-glimmer: #bb32d5;
-  --color-glacier-blue: #004eba;
-  --color-snow-white: #ffffff;
-  --color-cloud-mist: #f8f9fb;
-  --color-pale-gray: #e7edf6;
-  --color-slate-blue: #476788;
-  --color-steel-gray: #a6bbd1;
-  --color-platinum-tint: #d4e0ed;
-  --color-outline-gray: #e6e6e6;
-  --color-text-black: #0a0a0a;
+@theme {
+  /* Awesomic tokens */
+  --color-obsidian: #09090b;
+  --color-ink: #18181b;
+  --color-graphite: #3f3f46;
+  --color-slate: #52525b;
+  --color-steel: #71717a;
+  --color-ash: #a1a1aa;
+  --color-pebble: #d4d4d8;
+  --color-fog: #ececee;
+  --color-mist: #f4f4f5;
+  --color-snow: #ffffff;
+  --color-ember: #ff5a00;
+  --color-orchid-flash: #fe45e2;
 
   /* Typography */
-  --font-gilroy: var(--font-montserrat), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Shadows */
-  --shadow-sm: rgba(71, 103, 136, 0.04) 0px 4px 5px 0px, rgba(71, 103, 136, 0.03) 0px 4px 10px 0px, rgba(71, 103, 136, 0.05) 0px 10px 20px 0px;
-  --shadow-card: rgba(71, 103, 136, 0.04) 0px 4px 5px 0px, rgba(71, 103, 136, 0.03) 0px 8px 15px 0px, rgba(71, 103, 136, 0.08) 0px 30px 50px 0px;
-  --shadow-button: rgba(71, 103, 136, 0.04) 0px 4px 5px 0px, rgba(71, 103, 136, 0.03) 0px 8px 15px 0px, rgba(71, 103, 136, 0.06) 0px 15px 30px 0px;
+  --shadow-subtle: rgba(255, 255, 255, 0.5) 0px 0.5px 0px 0px inset, rgba(117, 123, 133, 0.4) 0px 9px 14px -5px inset, rgb(44, 46, 52) 0px 0px 0px 1.5px, rgba(0, 0, 0, 0.14) 0px 4px 6px 0px;
+  --shadow-subtle-2: rgb(228, 228, 231) 0px 1px 0px 0px inset;
 
-  --background: var(--color-cloud-mist);
-  --foreground: var(--color-text-black);
+  /* Mapping OLD colors to AWESOMIC tokens for instant UI update */
+  --color-midnight-indigo: var(--color-obsidian);
+  --color-action-blue: var(--color-obsidian);
+  --color-lavender-glow: var(--color-orchid-flash);
+  --color-royal-amethyst: var(--color-ember);
+  --color-sunset-gold: var(--color-ember);
+  --color-skybound-blue: var(--color-obsidian);
+  --color-ocean-glimmer: var(--color-orchid-flash);
+  --color-glacier-blue: var(--color-obsidian);
+  --color-snow-white: var(--color-snow);
+  --color-cloud-mist: var(--color-mist);
+  --color-pale-gray: var(--color-fog);
+  --color-slate-blue: var(--color-steel);
+  --color-steel-gray: var(--color-ash);
+  --color-platinum-tint: var(--color-pebble);
+  --color-outline-gray: var(--color-pebble);
+  --color-text-black: var(--color-ink);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-gilroy);
-
-  --color-midnight-indigo: #0b3558;
-  --color-action-blue: #006bff;
-  --color-lavender-glow: #e55cff;
-  --color-royal-amethyst: #8247f5;
-  --color-sunset-gold: #ffa600;
-  --color-skybound-blue: #0099ff;
-  --color-ocean-glimmer: #bb32d5;
-  --color-glacier-blue: #004eba;
-  --color-snow-white: #ffffff;
-  --color-cloud-mist: #f8f9fb;
-  --color-pale-gray: #e7edf6;
-  --color-slate-blue: #476788;
-  --color-steel-gray: #a6bbd1;
-  --color-platinum-tint: #d4e0ed;
-  --color-outline-gray: #e6e6e6;
-  --color-text-black: #0a0a0a;
-
-  --radius-card: 16px;
-  --radius-button: 8px;
-  --radius-badge: 50px;
-
-  --shadow-card: var(--shadow-card);
-  --shadow-button: var(--shadow-button);
-  --shadow-interactive: var(--shadow-sm);
+@layer base {
+  body {
+    @apply bg-mist text-ink font-sans antialiased text-[14px] leading-[1.56];
+  }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-gilroy);
-  font-size: 14px;
-  line-height: 1.71;
-}
+@layer components {
+  .card-floating {
+    @apply bg-snow text-obsidian rounded-[36px] shadow-none border-none;
+  }
 
-/* Component utilities */
-.card-floating {
-  background: var(--color-snow-white);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
-}
+  .btn-primary {
+    @apply bg-obsidian text-snow rounded-[36px] px-[16px] py-[12px] font-medium transition-opacity;
+    box-shadow: var(--shadow-subtle);
+  }
 
-.btn-primary {
-  background: var(--color-action-blue);
-  color: var(--color-snow-white);
-  border-radius: var(--radius-button);
-  padding: 6px 16px;
-  font-weight: 600;
-  transition: background 0.2s ease, box-shadow 0.2s ease;
-}
+  .btn-primary:hover:not(:disabled) {
+    @apply opacity-90;
+  }
 
-.btn-primary:hover:not(:disabled) {
-  background: #0056d6;
-  box-shadow: var(--shadow-button);
-}
+  .btn-primary:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
 
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+  .btn-ghost {
+    @apply bg-transparent text-ink rounded-[14px] px-[16px] py-[12px] font-medium transition-colors;
+  }
 
-.btn-ghost {
-  background: transparent;
-  color: var(--color-midnight-indigo);
-  border-radius: var(--radius-button);
-  padding: 6px 16px;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
+  .btn-ghost:hover:not(:disabled) {
+    @apply bg-fog text-obsidian;
+  }
 
-.btn-ghost:hover:not(:disabled) {
-  color: var(--color-action-blue);
-}
+  .badge-info {
+    @apply bg-graphite text-[#fafafa] rounded-[12px] px-[8px] py-[4px] text-[12px] font-medium;
+  }
 
-.badge-info {
-  background: var(--color-pale-gray);
-  color: var(--color-glacier-blue);
-  border-radius: var(--radius-badge);
-  padding: 4px 8px;
-  font-size: 12px;
-  font-weight: 600;
-}
+  .nav-link {
+    @apply text-ink font-medium transition-colors;
+  }
 
-.nav-link {
-  color: var(--color-midnight-indigo);
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
+  .nav-link:hover,
+  .nav-link[data-active="true"] {
+    @apply text-obsidian;
+  }
 
-.nav-link:hover,
-.nav-link[data-active="true"] {
-  color: var(--color-action-blue);
-}
-
-.shadow-interactive {
-  box-shadow: var(--shadow-sm);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  .shadow-interactive {
+    box-shadow: none;
   }
 }

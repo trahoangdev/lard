@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/docs/landing.png" alt="HR Nexus Landing Page" width="800"/>
+  <img src="hr-nexus/public/docs/landing.png" alt="HR Nexus Landing Page" width="800"/>
 
   # HR Nexus
   **Turn HR Workflows Into Simple Conversations.**  
@@ -19,7 +19,7 @@ With its sleek **Awesomic-inspired design system**, HR Nexus delivers a premium 
 ## 📸 Screenshots
 
 <div align="center">
-  <img src="public/docs/chat.png" alt="HR Nexus Chat Workspace" width="800"/>
+  <img src="hr-nexus/public/docs/chat.png" alt="HR Nexus Chat Workspace" width="800"/>
   <p><em>The intuitive Chat Workspace featuring AI-driven contextual actions.</em></p>
 </div>
 
@@ -73,29 +73,34 @@ To run HR Nexus locally and experience the magic yourself:
 
 ### Installation
 
-1. **Clone the repository** (if applicable):
+1. **Clone the repository**:
    ```bash
-   git clone https://github.com/trahoangdev/lard.git
+   git clone https://github.com/your-org/hr-nexus.git
    cd hr-nexus
    ```
 
-2. **Install dependencies:**
+2. **Navigate to the frontend app:**
+   ```bash
+   cd hr-nexus
+   ```
+
+3. **Install dependencies:**
    ```bash
    npm install
    ```
 
-3. **Database Setup:**
+4. **Database Setup:**
    Generate the Prisma client based on the SQLite schema:
    ```bash
    npx prisma generate
    ```
 
-4. **Start the development server:**
+5. **Start the development server:**
    ```bash
    npm run dev
    ```
 
-5. **Open the app:**
+6. **Open the app:**
    Navigate to `http://localhost:3000` to view the stunning Landing Page, then click **Launch Workspace** to start chatting.
 
 ---

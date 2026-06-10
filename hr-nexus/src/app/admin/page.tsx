@@ -26,8 +26,7 @@ export default async function AdminPage() {
   }));
 
   return (
-    <div className="relative flex flex-1 bg-cloud-mist text-text-black">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(229,92,255,0.06),transparent_45%),radial-gradient(circle_at_80%_40%,rgba(0,153,255,0.05),transparent_45%)]" />
+    <div className="relative flex flex-1 bg-mist text-ink">
       <main className="relative mx-auto w-full max-w-6xl px-6 py-8">
         <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="card-floating p-5">

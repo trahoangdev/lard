@@ -3,6 +3,7 @@ import { chatCompletion } from "@/lib/ai/openai";
 import type { ParsedIntent } from "@/lib/chat/parse";
 import { isoDate } from "@/lib/utils";
 
+
 const aiIntentSchema = z.object({
   kind: z.enum([
     "leave_request",

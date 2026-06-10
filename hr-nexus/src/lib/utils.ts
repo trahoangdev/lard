@@ -1,5 +1,12 @@
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
 export function clampText(input: string, max = 400) {
-  const trimmed = input.trim();
+  const trimmed = input?.trim() || "";
   if (trimmed.length <= max) return trimmed;
   return `${trimmed.slice(0, max - 1)}…`;
 }
@@ -23,4 +30,3 @@ export function daysBetweenInclusive(start: Date, end: Date) {
   const ms = endMid.getTime() - startMid.getTime();
   return Math.floor(ms / (24 * 60 * 60 * 1000)) + 1;
 }
-
